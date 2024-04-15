@@ -1,0 +1,14 @@
+Build.PL
+CHANGES
+examples/send.pl
+examples/subscribe.pl
+lib/Net/Stomp.pm
+lib/Net/Stomp/Frame.pm
+MANIFEST			This list of files
+MANIFEST.SKIP
+META.yml
+README
+t/pod.t
+t/pod_coverage.t
+xt/consume_buffering.t
+Makefile.PL

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx" xsi:schemaLocation="  
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd  
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd  
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+	<!-- 配置connectionFactory -->
+	<bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+		<property name="connectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL">
+					<value>tcp://139.224.105.22:61616?wireFormat.maxInactivityDurationInitalDelay=30000</value>
+				</property>
+				<property name="userName" value="test1"/>
+				<property name="password" value="sgcc.com.cn!2023"/>
+				<property name="transportListener">
+					<bean class="com.hyaroma.blog.jiankong.MQTransportListener" />
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="myJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory">
+			<ref local="jmsFactory" />
+		</property>
+		<property name="defaultDestinationName" value="test321" />
+		<property name="pubSubDomain" value="false" />
+	</bean>
+
+	<!-- 读取信息 -->
+	<bean id="consumer" class="com.hyaroma.blog.jiankong.EmailListener">
+		<property name="jmsTemplate" ref="myJmsTemplate" />
+	</bean>
+
+	<!-- 消息监听 -->
+	<bean id="listenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="concurrentConsumers" value="10" />
+		<property name="connectionFactory" ref="jmsFactory" />
+		<property name="destinationName" value="test321" />
+		<property name="messageListener" ref="consumer" />
+	</bean>
+
+</beans>  
